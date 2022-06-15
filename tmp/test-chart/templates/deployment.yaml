@@ -1,0 +1,50 @@
+---
+# Source: test-chart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: RELEASE-NAME-test-chart
+  labels:
+    helm.sh/chart: test-chart-0.1.0
+    app.kubernetes.io/name: test-chart
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: test-chart
+      app.kubernetes.io/instance: RELEASE-NAME
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: test-chart
+        app.kubernetes.io/instance: RELEASE-NAME
+    spec:
+      serviceAccountName: RELEASE-NAME-test-chart
+      securityContext:
+        {}
+      containers:
+        - name: test-chart
+          securityContext:
+            {}
+          image: "ghcr.io/jitesoft/nginx:latest"
+          imagePullPolicy: IfNotPresent
+          env: 
+            - name: CUSTOM_VARIABLE 
+              value: "HELLO FROM POD"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}
